@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .food-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px 30px;
+            text-align: center;
+        }
+
+        .login-header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .admin-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .login-form {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group.error input {
+            border-color: #e74c3c;
+            background: #fdf2f2;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .login-btn {
+            flex: 2;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reset-btn {
+            flex: 1;
+            padding: 15px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.3);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #764ba2;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .login-header {
+                padding: 30px 20px 20px;
+            }
+            
+            .login-header h1 {
+                font-size: 2rem;
+            }
+            
+            .login-form {
+                padding: 30px 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <img src="https://c8.alamy.com/comp/2F67DXH/delivery-fastfood-ordering-food-online-concept-large-set-of-assorted-take-out-foods-pizza-french-fries-fried-chicken-nuggets-burgers-salads-chic-2F67DXH.jpg" alt="Food Delivery - Pizza, Burgers, Fries and More" class="food-image">
+        <div class="login-header">
+            <h1>Admin Login</h1>
+            <p><b>Welcome back!</b></p>
+            <p>Please enter your credentials to access the admin portal.</p>
+        </div>
+        
+        <form class="login-form" id="loginForm">
+            <div class="success-message" id="successMessage">
+                Login successful! Redirecting to dashboard...
+            </div>
+            
+            <div class="form-group" id="emailGroup">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="admin@company.com" required>
+                <div class="error-message" id="emailError">Please enter a valid email address</div>
+            </div>
+            
+            <div class="form-group" id="passwordGroup">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <div class="error-message" id="passwordError">Password must be at least 8 characters long</div>
+            </div>
+            
+            <div class="button-group">
+                <button type="button" class="reset-btn" id="resetBtn">Reset</button>
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span class="spinner" id="spinner"></span>
+                    <span id="btnText">Login</span>
+                </button>
+            </div>
+            
+            <div class="forgot-password">
+                <a href="#" id="forgotLink">Forgot your password?</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const spinner = document.getElementById('spinner');
+        const btnText = document.getElementById('btnText');
+        const successMessage = document.getElementById('successMessage');
+
+        // Form validation functions
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 8;
+        }
+
+        function showError(inputId, show = true) {
+            const group = document.getElementById(inputId + 'Group');
+            if (show) {
+                group.classList.add('error');
+            } else {
+                group.classList.remove('error');
+            }
+        }
+
+        function validateForm() {
+            let isValid = true;
+            
+            // Validate email
+            if (!validateEmail(emailInput.value)) {
+                showError('email', true);
+                isValid = false;
+            } else {
+                showError('email', false);
+            }
+            
+            // Validate password
+            if (!validatePassword(passwordInput.value)) {
+                showError('password', true);
+                isValid = false;
+            } else {
+                showError('password', false);
+            }
+            
+            return isValid;
+        }
+
+        // Real-time validation
+        emailInput.addEventListener('blur', () => {
+            if (emailInput.value) {
+                showError('email', !validateEmail(emailInput.value));
+            }
+        });
+
+        passwordInput.addEventListener('blur', () => {
+            if (passwordInput.value) {
+                showError('password', !validatePassword(passwordInput.value));
+            }
+        });
+
+        // Clear errors on input
+        emailInput.addEventListener('input', () => {
+            if (emailInput.value && validateEmail(emailInput.value)) {
+                showError('email', false);
+            }
+        });
+
+        passwordInput.addEventListener('input', () => {
+            if (passwordInput.value && validatePassword(passwordInput.value)) {
+                showError('password', false);
+            }
+        });
+
+        // Reset button functionality
+        resetBtn.addEventListener('click', () => {
+            // Clear all form fields
+            loginForm.reset();
+            
+            // Clear any error states
+            showError('email', false);
+            showError('password', false);
+            
+            // Hide success message if visible
+            successMessage.style.display = 'none';
+            loginForm.style.opacity = '1';
+            
+            // Reset button state if it was in loading state
+            loginBtn.disabled = false;
+            spinner.style.display = 'none';
+            btnText.textContent = 'Login';
+            
+            // Focus on email field for better UX
+            emailInput.focus();
+            
+            console.log('Form reset successfully');
+        });
+
+        // Form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            btnText.textContent = 'Logging in...';
+            
+            // Simulate API call
+            try {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Show success message
+                successMessage.style.display = 'block';
+                loginForm.style.opacity = '0.7';
+                
+                // Simulate redirect after success
+                setTimeout(() => {
+                    alert('Login successful! In a real application, you would be redirected to the admin dashboard.');
+                    // Reset form after demo
+                    resetBtn.click();
+                }, 1500);
+                
+            } catch (error) {
+                alert('Login failed. Please check your credentials and try again.');
+            } finally {
+                // Reset button state
+                loginBtn.disabled = false;
+                spinner.style.display = 'none';
+                btnText.textContent = 'Login';
+            }
+        });
+
+        // Forgot password link
+        document.getElementById('forgotLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Password reset functionality would be implemented here. Please contact your system administrator.');
+        });
+
+        // Demo credentials hint
+        console.log('Demo: Use any valid email format and password with 8+ characters');
+    </script>
+</body>
+</html>
