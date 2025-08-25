@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - Delicious Bites</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="menu-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <i class="fas fa-utensils"></i>
+                    <span>Delicious Bites</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="menu.html" class="nav-link active">Menu</a></li>
+                    <li><a href="index.html#about" class="nav-link">About</a></li>
+                    <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+                    <li><a href="AdminLogin.html" class="nav-link">Admin</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="cart-btn" id="cartBtn">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                    <button class="hamburger" id="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Menu Hero -->
+    <section class="menu-hero">
+        <div class="container">
+            <h1>Our Menu</h1>
+            <p>Discover our delicious selection of freshly prepared meals</p>
+        </div>
+    </section>
+
+    <!-- Menu Categories -->
+    <section class="menu-categories">
+        <div class="container">
+            <div class="category-filters">
+                <button class="filter-btn active" data-category="all">All Items</button>
+                <button class="filter-btn" data-category="appetizers">Appetizers</button>
+                <button class="filter-btn" data-category="pizzas">Pizzas</button>
+                <button class="filter-btn" data-category="burgers">Burgers</button>
+                <button class="filter-btn" data-category="salads">Salads</button>
+                <button class="filter-btn" data-category="desserts">Desserts</button>
+                <button class="filter-btn" data-category="beverages">Beverages</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Items -->
+    <section class="menu-items">
+        <div class="container">
+            <!-- Appetizers -->
+            <div class="menu-section" data-category="appetizers">
+                <h2><i class="fas fa-seedling"></i> Appetizers</h2>
+                <div class="items-grid">
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Mozzarella Sticks">
+                        <div class="item-content">
+                            <h3>Mozzarella Sticks</h3>
+                            <p>Golden fried mozzarella with marinara sauce</p>
+                            <div class="item-footer">
+                                <span class="price">$8.99</span>
+                                <button class="add-to-cart" data-item="Mozzarella Sticks" data-price="8.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Buffalo Wings">
+                        <div class="item-content">
+                            <h3>Buffalo Wings</h3>
+                            <p>Spicy chicken wings with blue cheese dip</p>
+                            <div class="item-footer">
+                                <span class="price">$12.99</span>
+                                <button class="add-to-cart" data-item="Buffalo Wings" data-price="12.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1599490659213-e2b9527bd087?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Loaded Nachos">
+                        <div class="item-content">
+                            <h3>Loaded Nachos</h3>
+                            <p>Tortilla chips with cheese, jalapeños, and sour cream</p>
+                            <div class="item-footer">
+                                <span class="price">$10.99</span>
+                                <button class="add-to-cart" data-item="Loaded Nachos" data-price="10.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pizzas -->
+            <div class="menu-section" data-category="pizzas">
+                <h2><i class="fas fa-pizza-slice"></i> Pizzas</h2>
+                <div class="items-grid">
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Margherita Pizza">
+                        <div class="item-content">
+                            <h3>Margherita Pizza</h3>
+                            <p>Fresh tomatoes, mozzarella, and basil</p>
+                            <div class="item-footer">
+                                <span class="price">$16.99</span>
+                                <button class="add-to-cart" data-item="Margherita Pizza" data-price="16.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Pepperoni Pizza">
+                        <div class="item-content">
+                            <h3>Pepperoni Pizza</h3>
+                            <p>Classic pepperoni with mozzarella cheese</p>
+                            <div class="item-footer">
+                                <span class="price">$18.99</span>
+                                <button class="add-to-cart" data-item="Pepperoni Pizza" data-price="18.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Supreme Pizza">
+                        <div class="item-content">
+                            <h3>Supreme Pizza</h3>
+                            <p>Pepperoni, sausage, peppers, onions, and mushrooms</p>
+                            <div class="item-footer">
+                                <span class="price">$22.99</span>
+                                <button class="add-to-cart" data-item="Supreme Pizza" data-price="22.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Burgers -->
+            <div class="menu-section" data-category="burgers">
+                <h2><i class="fas fa-hamburger"></i> Burgers</h2>
+                <div class="items-grid">
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Classic Cheeseburger">
+                        <div class="item-content">
+                            <h3>Classic Cheeseburger</h3>
+                            <p>Beef patty with cheese, lettuce, tomato, and pickles</p>
+                            <div class="item-footer">
+                                <span class="price">$12.99</span>
+                                <button class="add-to-cart" data-item="Classic Cheeseburger" data-price="12.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1553979459-d2229ba7433a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="BBQ Bacon Burger">
+                        <div class="item-content">
+                            <h3>BBQ Bacon Burger</h3>
+                            <p>Beef patty with bacon, BBQ sauce, and onion rings</p>
+                            <div class="item-footer">
+                                <span class="price">$15.99</span>
+                                <button class="add-to-cart" data-item="BBQ Bacon Burger" data-price="15.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1571091718767-18b5b1457add?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Veggie Burger">
+                        <div class="item-content">
+                            <h3>Veggie Burger</h3>
+                            <p>Plant-based patty with avocado and sprouts</p>
+                            <div class="item-footer">
+                                <span class="price">$11.99</span>
+                                <button class="add-to-cart" data-item="Veggie Burger" data-price="11.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salads -->
+            <div class="menu-section" data-category="salads">
+                <h2><i class="fas fa-leaf"></i> Salads</h2>
+                <div class="items-grid">
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Caesar Salad">
+                        <div class="item-content">
+                            <h3>Caesar Salad</h3>
+                            <p>Romaine lettuce with parmesan and croutons</p>
+                            <div class="item-footer">
+                                <span class="price">$9.99</span>
+                                <button class="add-to-cart" data-item="Caesar Salad" data-price="9.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Greek Salad">
+                        <div class="item-content">
+                            <h3>Greek Salad</h3>
+                            <p>Mixed greens with feta, olives, and tomatoes</p>
+                            <div class="item-footer">
+                                <span class="price">$11.99</span>
+                                <button class="add-to-cart" data-item="Greek Salad" data-price="11.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Chicken Cobb Salad">
+                        <div class="item-content">
+                            <h3>Chicken Cobb Salad</h3>
+                            <p>Grilled chicken with bacon, eggs, and blue cheese</p>
+                            <div class="item-footer">
+                                <span class="price">$14.99</span>
+                                <button class="add-to-cart" data-item="Chicken Cobb Salad" data-price="14.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desserts -->
+            <div class="menu-section" data-category="desserts">
+                <h2><i class="fas fa-ice-cream"></i> Desserts</h2>
+                <div class="items-grid">
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Chocolate Cake">
+                        <div class="item-content">
+                            <h3>Chocolate Cake</h3>
+                            <p>Rich chocolate cake with chocolate frosting</p>
+                            <div class="item-footer">
+                                <span class="price">$6.99</span>
+                                <button class="add-to-cart" data-item="Chocolate Cake" data-price="6.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1567206563064-6f60f40a2b57?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Cheesecake">
+                        <div class="item-content">
+                            <h3>New York Cheesecake</h3>
+                            <p>Creamy cheesecake with berry compote</p>
+                            <div class="item-footer">
+                                <span class="price">$7.99</span>
+                                <button class="add-to-cart" data-item="New York Cheesecake" data-price="7.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Ice Cream Sundae">
+                        <div class="item-content">
+                            <h3>Ice Cream Sundae</h3>
+                            <p>Vanilla ice cream with chocolate sauce and nuts</p>
+                            <div class="item-footer">
+                                <span class="price">$5.99</span>
+                                <button class="add-to-cart" data-item="Ice Cream Sundae" data-price="5.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beverages -->
+            <div class="menu-section" data-category="beverages">
+                <h2><i class="fas fa-coffee"></i> Beverages</h2>
+                <div class="items-grid">
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1544145945-f90425340c7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Fresh Lemonade">
+                        <div class="item-content">
+                            <h3>Fresh Lemonade</h3>
+                            <p>Freshly squeezed lemon juice with mint</p>
+                            <div class="item-footer">
+                                <span class="price">$3.99</span>
+                                <button class="add-to-cart" data-item="Fresh Lemonade" data-price="3.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Iced Coffee">
+                        <div class="item-content">
+                            <h3>Iced Coffee</h3>
+                            <p>Cold brew coffee with cream and sugar</p>
+                            <div class="item-footer">
+                                <span class="price">$4.99</span>
+                                <button class="add-to-cart" data-item="Iced Coffee" data-price="4.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <img src="https://images.unsplash.com/photo-1570197788417-0e82375c9371?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Fruit Smoothie">
+                        <div class="item-content">
+                            <h3>Tropical Smoothie</h3>
+                            <p>Mango, pineapple, and coconut blend</p>
+                            <div class="item-footer">
+                                <span class="price">$6.99</span>
+                                <button class="add-to-cart" data-item="Tropical Smoothie" data-price="6.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Your Order</h3>
+            <button class="close-cart" id="closeCart">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <p class="empty-cart">Your cart is empty</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <strong>Total: $<span id="cartTotal">0.00</span></strong>
+            </div>
+            <button class="btn btn-primary checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <script src="script.js"></script>
+    <script src="menu-script.js"></script>
+</body>
+</html>
