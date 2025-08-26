@@ -2,13 +2,14 @@
 class MenuManager {
     constructor() {
         this.currentFilter = 'all';
+        this.ajaxService = new AjaxService();
         this.init();
     }
 
     init() {
         this.bindFilterEvents();
-        this.initializeAnimations();
         this.addSearchFunctionality();
+        this.loadMenuItems('all'); // Load all items initially
     }
 
     bindFilterEvents() {
@@ -23,21 +24,9 @@ class MenuManager {
         });
     }
 
-    filterItems(category) {
-        const menuSections = document.querySelectorAll('.menu-section');
-        
-        menuSections.forEach(section => {
-            const sectionCategory = section.getAttribute('data-category');
-            
-            if (category === 'all' || sectionCategory === category) {
-                section.classList.remove('hidden');
-                this.animateItemsIn(section);
-            } else {
-                section.classList.add('hidden');
-            }
-        });
-        
+    async filterItems(category) {
         this.currentFilter = category;
+        await this.loadMenuItems(category);
     }
 
     updateActiveFilter(activeBtn) {
@@ -107,39 +96,153 @@ class MenuManager {
         });
     }
 
-    searchItems(searchTerm) {
-        const menuItems = document.querySelectorAll('.menu-item');
-        const menuSections = document.querySelectorAll('.menu-section');
-        
+    async searchItems(searchTerm) {
         if (searchTerm === '') {
-            // Show all items based on current filter
-            this.filterItems(this.currentFilter);
+            await this.loadMenuItems(this.currentFilter);
             return;
         }
 
-        // Hide all sections first
-        menuSections.forEach(section => {
-            section.classList.add('hidden');
-        });
+        this.ajaxService.showLoading('menuItemsContainer');
+        
+        const result = await this.ajaxService.searchMenuItems(searchTerm);
+        
+        if (result.success) {
+            this.renderMenuItems(result.data, 'search');
+        } else {
+            this.showError('Failed to search menu items. Please try again.');
+        }
+    }
 
-        let hasResults = false;
+    // Load menu items via AJAX
+    async loadMenuItems(category) {
+        const container = document.querySelector('.menu-items .container');
+        if (!container) return;
 
-        menuItems.forEach(item => {
-            const itemName = item.querySelector('h3').textContent.toLowerCase();
-            const itemDescription = item.querySelector('p').textContent.toLowerCase();
+        // Add container ID for loading spinner
+        container.id = 'menuItemsContainer';
+        
+        this.ajaxService.showLoading('menuItemsContainer');
+        
+        const result = await this.ajaxService.getMenuItems(category);
+        
+        if (result.success) {
+            this.renderMenuItems(result.data, category);
+        } else {
+            this.showError('Failed to load menu items. Please try again.');
+        }
+    }
+
+    // Render menu items dynamically
+    renderMenuItems(items, category) {
+        const container = document.querySelector('.menu-items .container');
+        
+        if (items.length === 0) {
+            container.innerHTML = `
+                <div class="no-results">
+                    <div style="text-align: center; padding: 3rem; color: #666;">
+                        <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 1rem; color: #ccc;"></i>
+                        <h3>No dishes found</h3>
+                        <p>Try searching for something else or browse our categories above.</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // Group items by category for display
+        const groupedItems = this.groupItemsByCategory(items);
+        
+        let html = '';
+        for (const [cat, categoryItems] of Object.entries(groupedItems)) {
+            html += this.renderCategorySection(cat, categoryItems);
+        }
+        
+        container.innerHTML = html;
+        this.initializeAnimations();
+    }
+
+    // Group items by category
+    groupItemsByCategory(items) {
+        const categories = {
+            appetizers: { name: 'Appetizers', icon: 'fas fa-seedling' },
+            pizzas: { name: 'Pizzas', icon: 'fas fa-pizza-slice' },
+            burgers: { name: 'Burgers', icon: 'fas fa-hamburger' },
+            salads: { name: 'Salads', icon: 'fas fa-leaf' },
+            desserts: { name: 'Desserts', icon: 'fas fa-ice-cream' },
+            beverages: { name: 'Beverages', icon: 'fas fa-coffee' }
+        };
+
+        const grouped = {};
+        
+        items.forEach(item => {
+            // Determine category based on item ID ranges
+            let category;
+            if (item.id <= 3) category = 'appetizers';
+            else if (item.id <= 6) category = 'pizzas';
+            else if (item.id <= 9) category = 'burgers';
+            else if (item.id <= 12) category = 'salads';
+            else if (item.id <= 15) category = 'desserts';
+            else category = 'beverages';
             
-            if (itemName.includes(searchTerm) || itemDescription.includes(searchTerm)) {
-                const section = item.closest('.menu-section');
-                section.classList.remove('hidden');
-                item.style.display = 'block';
-                hasResults = true;
-            } else {
-                item.style.display = 'none';
+            if (!grouped[category]) {
+                grouped[category] = [];
             }
+            grouped[category].push(item);
         });
 
-        // Show "no results" message if needed
-        this.toggleNoResults(!hasResults);
+        return grouped;
+    }
+
+    // Render a category section
+    renderCategorySection(category, items) {
+        const categoryInfo = {
+            appetizers: { name: 'Appetizers', icon: 'fas fa-seedling' },
+            pizzas: { name: 'Pizzas', icon: 'fas fa-pizza-slice' },
+            burgers: { name: 'Burgers', icon: 'fas fa-hamburger' },
+            salads: { name: 'Salads', icon: 'fas fa-leaf' },
+            desserts: { name: 'Desserts', icon: 'fas fa-ice-cream' },
+            beverages: { name: 'Beverages', icon: 'fas fa-coffee' }
+        };
+
+        const info = categoryInfo[category] || { name: category, icon: 'fas fa-utensils' };
+        
+        return `
+            <div class="menu-section" data-category="${category}">
+                <h2><i class="${info.icon}"></i> ${info.name}</h2>
+                <div class="items-grid">
+                    ${items.map(item => this.renderMenuItem(item)).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // Render individual menu item
+    renderMenuItem(item) {
+        return `
+            <div class="menu-item" data-item-id="${item.id}">
+                <img src="${item.image}" alt="${item.name}" loading="lazy">
+                <div class="item-content">
+                    <h3>${item.name}</h3>
+                    <p>${item.description}</p>
+                    <div class="item-footer">
+                        <span class="price">$${item.price.toFixed(2)}</span>
+                        <button class="add-to-cart" data-item="${item.name}" data-price="${item.price}">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Show error message
+    showError(message) {
+        const container = document.querySelector('.menu-items .container');
+        container.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>${message}</p>
+                <button onclick="location.reload()" class="btn btn-secondary">Retry</button>
+            </div>
+        `;
     }
 
     toggleNoResults(show) {

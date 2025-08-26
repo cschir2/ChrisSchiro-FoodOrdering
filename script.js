@@ -2,6 +2,7 @@
 class ShoppingCart {
     constructor() {
         this.items = JSON.parse(localStorage.getItem('cart')) || [];
+        this.ajaxService = new AjaxService();
         this.init();
     }
 
@@ -192,55 +193,322 @@ class ShoppingCart {
         }, 3000);
     }
 
-    checkout() {
+    async checkout() {
         if (this.items.length === 0) {
-            alert('Your cart is empty!');
+            this.showMessage('Your cart is empty!', 'error');
             return;
         }
 
-        // Create checkout page or redirect
+        // Show checkout modal instead of alert
+        this.showCheckoutModal();
+    }
+
+    async processOrder(customerInfo = {}) {
         const total = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const orderSummary = this.items.map(item => 
-            `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
-        ).join('\n');
+        
+        const orderData = {
+            items: this.items,
+            customerInfo,
+            total: total
+        };
 
-        const confirmOrder = confirm(
-            `Order Summary:\n\n${orderSummary}\n\nTotal: $${total.toFixed(2)}\n\nProceed to checkout?`
-        );
-
-        if (confirmOrder) {
-            // In a real application, this would redirect to a checkout page
-            // For now, we'll simulate the order process
-            this.processOrder();
+        // Show loading state
+        this.showOrderProcessing();
+        
+        const result = await this.ajaxService.submitOrder(orderData);
+        
+        if (result.success) {
+            this.showOrderSuccess(result.data);
+            // Clear cart
+            this.items = [];
+            this.saveCart();
+            this.updateCartDisplay();
+            this.closeCart();
+        } else {
+            this.showOrderError(result.error);
         }
     }
 
-    processOrder() {
-        // Simulate order processing
-        const orderNumber = Math.floor(Math.random() * 1000000);
-        
-        alert(`Order #${orderNumber} placed successfully!\n\nEstimated delivery time: 30-45 minutes\n\nThank you for your order!`);
-        
-        // Clear cart
-        this.items = [];
-        this.saveCart();
-        this.updateCartDisplay();
-        this.closeCart();
-    }
-
-    handleContactForm(e) {
-        const formData = new FormData(e.target);
+    async handleContactForm(e) {
         const name = e.target.querySelector('input[type="text"]').value;
         const email = e.target.querySelector('input[type="email"]').value;
         const message = e.target.querySelector('textarea').value;
 
-        // Simulate form submission
-        if (name && email && message) {
-            alert('Thank you for your message! We\'ll get back to you soon.');
+        if (!name || !email || !message) {
+            this.showMessage('Please fill in all fields.', 'error');
+            return;
+        }
+
+        // Show loading state
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Sending...';
+        submitBtn.disabled = true;
+
+        const formData = { name, email, message };
+        const result = await this.ajaxService.submitContactForm(formData);
+        
+        if (result.success) {
+            this.showMessage(result.data.message, 'success');
             e.target.reset();
         } else {
-            alert('Please fill in all fields.');
+            this.showMessage('Failed to send message. Please try again.', 'error');
         }
+
+        // Reset button
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+
+    // Show checkout modal
+    showCheckoutModal() {
+        const total = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const orderSummary = this.items.map(item => 
+            `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
+        ).join('<br>');
+
+        const modal = document.createElement('div');
+        modal.className = 'checkout-modal';
+        modal.innerHTML = `
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Checkout</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="order-summary">
+                            <h4>Order Summary</h4>
+                            <div class="order-items">${orderSummary}</div>
+                            <div class="order-total"><strong>Total: $${total.toFixed(2)}</strong></div>
+                        </div>
+                        <form class="checkout-form">
+                            <div class="form-group">
+                                <label>Name *</label>
+                                <input type="text" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone *</label>
+                                <input type="tel" name="phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Address *</label>
+                                <textarea name="address" required></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary cancel-order">Cancel</button>
+                                <button type="submit" class="btn btn-primary place-order">Place Order</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add modal styles
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+        `;
+
+        document.body.appendChild(modal);
+
+        // Bind events
+        modal.querySelector('.close-modal').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+
+        modal.querySelector('.cancel-order').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+
+        modal.querySelector('.checkout-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const customerInfo = {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                address: formData.get('address')
+            };
+            document.body.removeChild(modal);
+            this.processOrder(customerInfo);
+        });
+
+        modal.querySelector('.modal-overlay').addEventListener('click', (e) => {
+            if (e.target === modal.querySelector('.modal-overlay')) {
+                document.body.removeChild(modal);
+            }
+        });
+    }
+
+    // Show order processing state
+    showOrderProcessing() {
+        const modal = document.createElement('div');
+        modal.className = 'processing-modal';
+        modal.innerHTML = `
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <div class="processing-content">
+                        <div class="spinner"></div>
+                        <h3>Processing your order...</h3>
+                        <p>Please wait while we confirm your order.</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2001;
+        `;
+
+        document.body.appendChild(modal);
+        this.processingModal = modal;
+    }
+
+    // Show order success
+    showOrderSuccess(orderData) {
+        if (this.processingModal) {
+            document.body.removeChild(this.processingModal);
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'success-modal';
+        modal.innerHTML = `
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <div class="success-content">
+                        <i class="fas fa-check-circle success-icon"></i>
+                        <h3>Order Placed Successfully!</h3>
+                        <p><strong>Order #${orderData.orderId}</strong></p>
+                        <p>Estimated delivery time: ${orderData.estimatedTime}</p>
+                        <p>Thank you for your order!</p>
+                        <button class="btn btn-primary close-success">Continue Shopping</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2001;
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.querySelector('.close-success').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+
+        modal.querySelector('.modal-overlay').addEventListener('click', (e) => {
+            if (e.target === modal.querySelector('.modal-overlay')) {
+                document.body.removeChild(modal);
+            }
+        });
+    }
+
+    // Show order error
+    showOrderError(error) {
+        if (this.processingModal) {
+            document.body.removeChild(this.processingModal);
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'error-modal';
+        modal.innerHTML = `
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <div class="error-content">
+                        <i class="fas fa-exclamation-triangle error-icon"></i>
+                        <h3>Order Failed</h3>
+                        <p>${error}</p>
+                        <div class="error-actions">
+                            <button class="btn btn-secondary close-error">Close</button>
+                            <button class="btn btn-primary retry-order">Try Again</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2001;
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.querySelector('.close-error').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+
+        modal.querySelector('.retry-order').addEventListener('click', () => {
+            document.body.removeChild(modal);
+            this.showCheckoutModal();
+        });
+
+        modal.querySelector('.modal-overlay').addEventListener('click', (e) => {
+            if (e.target === modal.querySelector('.modal-overlay')) {
+                document.body.removeChild(modal);
+            }
+        });
+    }
+
+    // Show general messages
+    showMessage(message, type = 'info') {
+        const messageEl = document.createElement('div');
+        messageEl.className = `message-toast ${type}`;
+        messageEl.innerHTML = `
+            <div class="message-content">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+
+        messageEl.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1002;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        `;
+
+        document.body.appendChild(messageEl);
+
+        setTimeout(() => {
+            messageEl.style.transform = 'translateX(0)';
+        }, 100);
+
+        setTimeout(() => {
+            messageEl.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (document.body.contains(messageEl)) {
+                    document.body.removeChild(messageEl);
+                }
+            }, 300);
+        }, 3000);
     }
 }
 
